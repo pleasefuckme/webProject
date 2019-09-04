@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!--引入所需要的文件-->
+
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-select.css"/>
+    <script src="../js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/bootstrap-select.js"></script>
+
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="../js/bootstrap-datetimepicker.js"></script>
+    <script src="../js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap-datetimepicker.css"/>
+
+    <script src="../js/bootstrap-treeview.js"></script>
+    <script src="../js/moment.min.js"></script>
+    <script src="../js/locales.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <!--<script src="../bower_components/bootstrap-select/js/bootstrap-select.js"></script>-->
+
+    <script src="../js/bootstrap-switch.min.js"></script>
+    <script src="../js/bootstrap-table.min.js"></script>
+    <script src="../js/bootstrap-table-zh-CN.js"></script>
+    <script src="../js/moment-with-locales.min.js"></script>
+<style>
+    .notclickn{
+        pointer-events: none;
+    }
+</style>
+
+    <script type="application/javascript">
+        $(function () {
+            QueryAll();
+
+            //读取数据类型
+            function QueryAll() {
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "json",//数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/ElectricMeterBaseStation/QueryAll",  //数据访问路径
+                    success: function (reslt) {//返回成功后所调用得函数
+                        creteTable(reslt);//函数调用
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            }
+
+            /*新增点击按钮事件*/
+            $("#btnNew").click(function () {
+                $("#Divdata1").modal();
+            });
+            /*修改点击按钮事件*/
+            $("#btnUpdate").click(function () {
+                var row = $("#tblUser").bootstrapTable('getSelections');
+                if(row.length > 0) {
+                    $("#Divdata2").modal();
+                    $("#basestationnumber2").val(row[0].basestationnumber);
+                    $("#placethebasestation2").val(row[0].placethebasestation);
+                    $("#meterinstallationtime2").val(row[0].meterinstallationtime);
+                    $("#electricmeternumber2").val(row[0].electricmeternumber);
+                    $("#contacts2").val(row[0].contacts);
+                    $("#electricitymeterinit2").val(row[0].electricitymeterinit);
+                    $("#isservice2").val(row[0].isservice);
+                    $("#note2").val(row[0].note);
+                    $("#mainlyprovidedlinenumber2").val(row[0].mainlyprovidedlinenumber);
+                    $("#validity2").val(row[0].validity);
+                    $("#expirationdate2").val(row[0].expirationdate);
+                } else {
+                    alert("请选择要修改的数据！");
+                }
+
+            });
+            /*删除点击按钮事件*/
+            $("#btnDel").click(function () {
+                $("#Divdata3").modal();
+            });
+
+            /*将数据绑定在表格上*/
+            function creteTable(userData) {
+                // var userdata = JSON.parse(userData);
+                $("#tblUser").bootstrapTable("destroy");//清空表格
+                $("#tblUser").bootstrapTable({
+                    data: userData,
+                    sidePagination: "client",
+                    loadMsg: "正在加载数据",
+                    pageSize: "10", //分页
+                    pagination: true,
+                    singleSelect: true,
+                    columns: [
+                        // {
+                        //     field: "meterreadingid",
+                        //     title: "主键",
+                        //     align: "center"
+                        // },
+                        {
+                            field: "state",
+                            checkbox: true,
+                            align: "center"
+                        },
+                        {
+                            field: "basestationnumber",
+                            title: "基站编号",
+                            align: "center"
+                        },
+                        {
+                            field: "placethebasestation",
+                            title: "基站地点",
+                            align: "center"
+                        },
+                        {
+                            field: "meterinstallationtime",
+                            title: "安装电表时间",
+                            align: "center"
+                        },
+                        {
+                            field: "electricmeternumber",
+                            title: "电表编号",
+                            align: "center"
+                        },
+                        {
+                            field: "contacts",
+                            title: "安装联系人",
+                            align: "center"
+                        },
+                        {
+                            field: "electricitymeterinit",
+                            title: "电表初始值",
+                            align: "center"
+                        },
+                        {
+                            field: "isservice",
+                            title: "是否检修过",
+                            align: "center"
+                        },
+                        {
+                            field: "note",
+                            title: "备注",
+                            align: "center"
+                        },
+                        {
+                            field: "mainlyprovidedlinenumber",
+                            title: "主要提供的线路编号",
+                            align: "center"
+                        },
+                        {
+                            field: "validity",
+                            title: "使用有效期",
+                            align: "center"
+                        },
+                        {
+                            field: "expirationdate",
+                            title: "截止日期",
+                            align: "center"
+                        }
+                        // {
+                        //     field: "nowmeternumber",
+                        //     title: "当前电表数",
+                        //     align: "center",
+                        //     formatter: function (value, row, index) {
+                        //         return row["lightning_use"] * row["price_lightning"];
+                        //     }
+                        // }
+                    ]
+                });
+                $("#tblUser").bootstrapTable('hideLoading');
+            }
+
+            $("#btnSave").click(function () {
+                var basestationnumber = $("#basestationnumber").val();
+                var placethebasestation = $("#placethebasestation").val();
+                var meterinstallationtime = $("#meterinstallationtime").val();
+                var electricmeternumber = $("#electricmeternumber").val();
+                var contacts = $("#contacts").val();
+                var electricitymeterinit = $("#electricitymeterinit").val();
+                var isservice = $("#isservice").val();
+                var note = $("#note").val();
+                var mainlyprovidedlinenumber = $("#mainlyprovidedlinenumber").val();
+                var validity = $("#validity").val();
+                var expirationdate = $("#expirationdate").val();
+                if (basestationnumber == null || placethebasestation == null ||
+                    meterinstallationtime == null || electricmeternumber == null ||
+                    contacts == null || electricitymeterinit == null||
+                    isservice == null ||note == null ||mainlyprovidedlinenumber == null
+                    ||validity == null || expirationdate==null) {
+                    alert("不能存在空值");
+                    return;
+                }
+                $.ajax({
+                    type: "post", //提交类型
+                    dataTyp: "text", //数据类型
+                    data: {
+                        "basestationnumber": basestationnumber,
+                        "placethebasestation": placethebasestation,
+                        "meterinstallationtime": meterinstallationtime,
+                        "electricmeternumber": electricmeternumber,
+                        "contacts": contacts,
+                        "electricitymeterinit": electricitymeterinit,
+                        "isservice": isservice,
+                        "note": note,
+                        "mainlyprovidedlinenumber": mainlyprovidedlinenumber,
+                        "validity": validity,
+                        "expirationdate": expirationdate
+                    },
+                    url: "http://localhost:8080/webProject_war_exploded/ElectricMeterBaseStation/Add", //数据访问路径
+                    success: function (reslt) { //返回成功后所调用得函数
+                        // createTable(reslt); //函数调用
+                        if (reslt == -1) {
+                            alert("电表不存在!!!");
+                        } else {
+                            QueryAll();
+                        }
+                    }
+                    // error: function (reslt) { //返回失败所调用得函数
+                    //     // alert(date);
+                    //     alert("插入失败");
+                    //
+                    // }
+                });
+            });
+            $("#btnoff").click(function () {
+                $("#basestationnumber").val("");
+                $("#placethebasestation").val("");
+                $("#meterinstallationtime").val("");
+                $("#electricmeternumber").val("");
+                $("#contacts").val("");
+                $("#electricitymeterinit").val("");
+                $("#isservice").val("");
+                $("#note").val("");
+                $("#mainlyprovidedlinenumber").val("");
+                $("#validity").val("");
+                $("#expirationdate").val("");
+            });
+            $("#btnSave2").click(function () {
+                var basestationnumber=$("#basestationnumber2").val();
+                var placethebasestation= $("#placethebasestation2").val();
+                var meterinstallationtime=$("#meterinstallationtime2").val();
+                var electricmeternumber=$("#electricmeternumber2").val();
+                var contacts=$("#contacts2").val();
+                var electricitymeterinit=$("#electricitymeterinit2").val();
+                var isservice=$("#isservice2").val();
+                var note=$("#note2").val();
+                var mainlyprovidedlinenumber=$("#mainlyprovidedlinenumber2").val();
+                var validity=$("#validity2").val();
+                var expirationdate=$("#expirationdate2").val();
+                if (basestationnumber == null || placethebasestation == null ||
+                    meterinstallationtime == null || electricmeternumber == null ||
+                    contacts == null || electricitymeterinit == null
+                    || isservice == null|| note == null
+                    || mainlyprovidedlinenumber == null|| validity == null
+                    || expirationdate == null) {
+                    alert("不能存在空值");
+                    return;
+                }
+                var date=new Date();
+                var date1 = new Date(meterinstallationtime);
+                if(date.getTime() > (date1.getTime()+259200000)){
+                    alert("时间超过三天已经不能修改!!!")
+                } else {
+                    var row = $("#tblUser").bootstrapTable('getSelections');
+                    var electricmeterbasestationid=row[0].electricmeterbasestationid;
+                    $.ajax({
+                        type: "get", //提交类型
+                        dataTyp: "text", //数据类型
+                        data: {
+                            "electricmeterbasestationid":electricmeterbasestationid,
+                            "basestationnumber": basestationnumber,
+                            "placethebasestation": placethebasestation,
+                            "meterinstallationtime": meterinstallationtime,
+                            "electricmeternumber": electricmeternumber,
+                            "contacts": contacts,
+                            "electricitymeterinit": electricitymeterinit,
+                            "note": note,
+                            "mainlyprovidedlinenumber": mainlyprovidedlinenumber,
+                            "isservice": isservice,
+                            "validity": validity,
+                            "expirationdate": expirationdate
+                        },
+                        url: "http://localhost:8080/webProject_war_exploded/ElectricMeterBaseStation/Update", //数据访问路径
+                        success: function (reslt) { //返回成功后所调用得函数
+                            // createTable(reslt); //函数调用
+                            if (reslt == -1) {
+                                alert("电表不存在!!!");
+                            } else {
+                                QueryAll();
+                            }
+                        }
+                    });
+                }
+            });
+            $("#btnoff2").click(function () {
+                var row = $("#tblUser").bootstrapTable('getSelections');
+                $("#basestationnumber2").val(row[0].basestationnumber);
+                $("#placethebasestation2").val(row[0].placethebasestation);
+                $("#meterinstallationtime2").val(row[0].meterinstallationtime);
+                $("#electricmeternumber2").val(row[0].electricmeternumber);
+                $("#contacts2").val(row[0].contacts);
+                $("#electricitymeterinit2").val(row[0].electricitymeterinit);
+                $("#isservice2").val(row[0].isservice);
+                $("#note2").val(row[0].note);
+                $("#mainlyprovidedlinenumber2").val(row[0].mainlyprovidedlinenumber);
+                $("#validity2").val(row[0].validity);
+                $("#expirationdate2").val(row[0].expirationdate);
+            });
+            $("#btnSave3").click(function () {
+                var row = $("#tblUser").bootstrapTable('getSelections');
+                var electricmeterbasestationid=row[0].electricmeterbasestationid;
+                var meterinstallationtime=row[0].meterinstallationtime;
+                var date=new Date();
+                var date1 = new Date(meterinstallationtime);
+                if(date.getTime() > (date1.getTime()+259200000)){
+                    alert("时间超过三天已经不能删除!!!")
+                }else {
+                    $.ajax({
+                        type: "post",	//提交类型
+                        dataTyp: "text",//数据类型
+                        url: "http://localhost:8080/webProject_war_exploded/ElectricMeterBaseStation/Delete",  //数据访问路径
+                        data: {
+                            "electricmeterbasestationid": electricmeterbasestationid
+                        },
+                        success: function (reslt) {//返回成功后所调用得函数
+                            QueryAll();
+                        },
+                        error: function (date) {//返回失败所调用得函数
+                            alert(date);
+                        }
+                    });
+                }
+            });
+            $("#btnSelect1").click(function () {
+                var basestationnumber= $("#txtUsername1").val();
+                alert(basestationnumber);
+                if (basestationnumber == "") {
+                    alert("请输入后再查询!!!")
+                    return;
+                }else{
+                    $.ajax({
+                        type: "post", //提交类型
+                        dataTyp: "json", //数据类型
+                        data: {
+                            "basestationnumber": basestationnumber
+                        },
+                        url: "http://localhost:8080/webProject_war_exploded/ElectricMeterBaseStation/QueryByNumber", //数据访问路径
+                        success: function (reslt) { //返回成功后所调用得函数
+                            alert(reslt);
+                                creteTable(reslt);
+                        }
+                    });
+                }
+            });
+        });
+
+
+    </script>
+</head>
+
+<body>
+<div class="container-fluid">
+    <!--查询区域开始-->
+    <center>
+        <!--列表开始-->
+        <div class="row col-md-10">
+            <table id="tblUser"></table>
+        </div>
+        <!--列表结束-->
+        <div class="row col-md-10">
+            <div id="Select" class="form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>基站编号</label>
+                    <input type="text" class="form-control" id="txtUsername1" name="username" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" id="btnSelect1">查询</button>
+                </div>
+            </div>
+        </div>
+
+        <!--查询结束-->
+
+        <!--功能区域开始-->
+        <div class="row col-md-10" style="margin-top: 20px;">
+            <button class="btn btn-success" id="btnNew">新增</button>
+            <button class="btn btn-warning" id="btnUpdate">修改</button>
+            <button class="btn btn-danger" id="btnDel">删除</button>
+
+        </div>
+    </center>
+    <!--功能区域结束-->
+
+
+</div>
+<!--模态框处理-->
+<div class="modal fade" id="Divdata1" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">新增基站</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>基站&emsp;编号</label>
+                    <input type="text" class="form-control" id="basestationnumber" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>基站&emsp;&emsp;地点</label>
+                    <input type="text" class="form-control" id="placethebasestation" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表&emsp;编号</label>
+                    <input type="text" class="form-control" id="electricmeternumber" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>安装&emsp;联系人</label>
+                    <input type="text" class="form-control" id="contacts" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表初始值</label>
+                    <input type="text" class="form-control" id="electricitymeterinit" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>是否&emsp;检修过</label>
+                    <input type="text" class="form-control" id="isservice" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>&emsp;备&emsp;注&emsp;</label>
+                    <input type="text" class="form-control" id="note" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>提供线路编号</label>
+                    <input type="text" class="form-control" id="mainlyprovidedlinenumber" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3" />
+                <div class="form-group">
+                    <label class="control-label" for>安装电表时间</label>
+                    <div class="form-group">
+                        <div id="date1" class="input-group date form_date ">
+                            <input id="meterinstallationtime"  style="width: 125px" class="form-control" type="text" value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date1").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>&emsp;使用有效期</label>
+                    <div class="form-group">
+                        <div id="date2" class="input-group date form_date ">
+                            <input id="validity" style="width: 125px" class="form-control" type="text" value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date2").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>截至&emsp;&emsp;日期</label>
+                    <div class="form-group">
+                        <div id="date3" class="input-group date form_date ">
+                            <input id="expirationdate" style="width: 125px" class="form-control" type="text" value="" readonly placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date3").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" id="btnSave" class="btn btn-info" data-dismiss="modal" aria-hidden="true">新增</button>
+                <button type="button" id="btnoff" class="btn btn-default" aria-hidden="true">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Divdata2" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">新增基站</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>基站&emsp;编号</label>
+                    <input type="text" class="form-control" id="basestationnumber2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>基站&emsp;&emsp;地点</label>
+                    <input type="text" class="form-control" id="placethebasestation2" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表&emsp;编号</label>
+                    <input type="text" class="form-control" id="electricmeternumber2" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>安装&emsp;联系人</label>
+                    <input type="text" class="form-control" id="contacts2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表初始值</label>
+                    <input type="text" class="form-control" id="electricitymeterinit2" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>是否&emsp;检修过</label>
+                    <input type="text" class="form-control" id="isservice2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>&emsp;备&emsp;注&emsp;</label>
+                    <input type="text" class="form-control" id="note2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>提供线路编号</label>
+                    <input type="text" class="form-control" id="mainlyprovidedlinenumber2" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3" />
+                <div class="form-group">
+                    <label class="control-label" for>安装电表时间</label>
+                    <div class="form-group">
+                        <div id="date4" class="input-group date form_date notclickn">
+                            <input id="meterinstallationtime2" disabled="disabled" style="width: 125px" class="form-control" type="text" value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date4").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>&emsp;使用有效期</label>
+                    <div class="form-group">
+                        <div id="date5" class="input-group date form_date ">
+                            <input id="validity2" style="width: 125px" class="form-control" type="text" value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date5").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>截至&emsp;&emsp;日期</label>
+                    <div class="form-group">
+                        <div id="date6" class="input-group date form_date ">
+                            <input id="expirationdate2" style="width: 125px" class="form-control" type="text" value="" readonly placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date6").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                </div>
+            </div>
+            <div class="modal-footer">
+
+                <button type="button" id="btnSave2" class="btn btn-info" data-dismiss="modal" aria-hidden="true">修改</button>
+                <button type="button" id="btnoff2" class="btn btn-default" aria-hidden="true">重置</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="Divdata3" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+<div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">删除选中记录</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                确定删除选中的记录????
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnSave3" class="btn btn-info" data-dismiss="modal" aria-hidden="true">删除
+                </button>
+                <button type="button" id="btnoff3" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

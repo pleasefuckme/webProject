@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.baidu.dao.meterReadingMapper">
+    <resultMap id="electricmeternumbers" type="QueryVo">
+        <result property="electricmeternumber" column="electricmeternumber"/>
+    </resultMap>
+    <resultMap id="meterreadingways" type="QueryVo">
+        <result property="meterreadingway" column="meterreadingway"/>
+    </resultMap>
+    <select id="QueryAll" resultType="meterreading">
+        select *
+        from meterreading
+    </select>
+    <select id="QueryLastByElectricMeterNumber" resultType="meterreading" parameterType="int">
+        select *
+        from meterreading
+        where electricmeternumber = #{electricmeternumber}
+        order by meterreadingid desc
+        limit 1
+    </select>
+    <select id="QueryLast" resultType="meterreading">
+        select *
+        from meterreading
+        order by meterreadingid desc
+        limit 1
+    </select>
+    <insert id="Add" parameterType="meterreading" useGeneratedKeys="true" keyProperty="meterreadingid">
+        insert into meterreading(meternumber, electricmeternumber, meterreadingstarttime, meterreadingendtime,
+                                 nowmeternumber,
+                                 lastmeternumber, createtime, creater, createway, meterreadingway)
+        values (#{meternumber}, #{electricmeternumber}, #{meterreadingstarttime}, #{meterreadingendtime},
+                #{nowmeternumber},
+                #{lastmeternumber}, #{createtime}, #{creater}, #{createway}, #{meterreadingway})
+    </insert>
+    <update id="Update" parameterType="meterreading" >
+        update meterreading
+        set meternumber=#{meternumber},
+            electricmeternumber=#{electricmeternumber},
+            meterreadingstarttime=#{meterreadingstarttime},
+            meterreadingendtime=#{meterreadingendtime},
+            nowmeternumber=#{nowmeternumber},
+            lastmeternumber=#{lastmeternumber},
+            updater=#{updater},
+            updatetime=#{updatetime}
+        where meterreadingid = #{meterreadingid}
+    </update>
+    <delete id="Delete" parameterType="int" >
+        delete from meterreading where meterreadingid=#{meterreadingid}
+    </delete>
+    <select id="getelectricmeternumbers" resultMap="electricmeternumbers">
+        select distinct electricmeternumber
+        from meterreading
+    </select>
+    <select id="getmeterreadingways" resultMap="meterreadingways">
+        select distinct meterreadingway
+        from meterreading
+    </select>
+    <!--多条件查询-->
+    <select id="QueryByMore" resultType="meterreading" parameterType="QueryVo" >
+        select * from meterreading
+<where>
+    <if test="electricmeternumber!=-1">
+        and electricmeternumber=#{electricmeternumber}
+    </if>
+<if test="meterreadingway!=null">
+    and meterreadingway=#{meterreadingway}
+</if>
+<if test="createtime!=null">
+    and createtime like #{createtime}
+</if>
+</where>
+    </select>
+
+    <insert id="upload" parameterType="java.util.List">
+        insert into meterreading
+          (meternumber,electricmeternumber,meterreadingstarttime,
+          meterreadingendtime,nowmeternumber,lastmeternumber,creater,createway,meterreadingway,createtime)value
+        <foreach collection="list" item="item" separator=",">
+            (#{item.meternumber},#{item.electricmeternumber}
+            ,#{item.meterreadingstarttime},#{item.meterreadingendtime}
+            ,#{item.nowmeternumber},#{item.lastmeternumber}
+            ,#{item.creater},#{item.createway}
+            ,#{item.meterreadingway},#{item.createtime})
+        </foreach>
+    </insert>
+
+</mapper>

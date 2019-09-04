@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!--引入所需要的文件-->
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap-select.css"/>
+    <script src="../js/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/bootstrap-select.js"></script>
+
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="../js/bootstrap-datetimepicker.js"></script>
+    <script src="../js/bootstrap-datetimepicker.zh-CN.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap-datetimepicker.css"/>
+    <script src="../js/bootstrap-treeview.js"></script>
+    <script src="../js/moment.min.js"></script>
+    <script src="../js/locales.min.js"></script>
+    <script src="../js/bootbox.min.js"></script>
+    <!--<script src="../bower_components/bootstrap-select/js/bootstrap-select.js"></script>-->
+    <script src="../js/bootstrap-switch.min.js"></script>
+    <script src="../js/bootstrap-table.min.js"></script>
+    <script src="../js/bootstrap-table-zh-CN.js"></script>
+    <script src="../js/moment-with-locales.min.js"></script>
+
+    <script src="jquery.form.js"></script>
+
+
+    <script type="text/javascript">
+        $(function () {
+            QueryAll();
+            xialakuang();
+            xialakuang2();
+
+            function QueryAll() {
+                //读取数据类型
+                $.ajax({
+                    type: "post",	//提交类型D:\IDEAProject\webProject\
+                    dataTyp: "json",//数据类型src\main\resources\sqlmap\electricMeterBaseStationMapper.xml
+                    // contentType:"application/json;charset=UTF-8",
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/QueryAll",  //数据访问路径
+                    success: function (reslt) {//返回成功后所调用得函数
+                        creteTable(reslt);//函数调用
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            }
+
+            function xialakuang() {
+                var now = new Date();
+                $("#hidden2").val(now.getFullYear());
+                $("#hidden3").val(now.getMonth());
+                var year = now.getFullYear();
+                year = parseInt(year);
+                for (var i = 0; i < 10; i++) {
+                    $("#selectpicker1").append('<option>' + parseInt(year - i) + '</option>');
+                }
+            }
+
+            function xialakuang2() {
+                $.ajax({
+                    type: "get", //提交类型
+                    dataTyp: "json", //数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/Selects", //数据访问路径
+                    success: function (result) { //返回成功后所调用得函数
+                        // alert(result[0][0].electricmeternumber);
+                        // alert("hello");
+                        // alert(result.list1[0].electricmeternumber);
+                        // alert(result.list1.length);
+                        // alert(result.list1.size());
+                        for (var i = 0; i < result[0].length; i++) {
+                            var option = result[0][i].electricmeternumber;
+                            // alert(option);
+                            $("#selectpicker3").append('<option>' + option + '</option>');
+                        }
+                        for (var j = 0; j < result[1].length; j++) {
+                            var option = result[1][j].meterreadingway;
+                            // alert(option);
+                            $("#selectpicker4").append('<option>' + option + '</option>');
+                        }
+                        $("#selectpicker3").selectpicker('refresh');
+                        $("#selectpicker4").selectpicker('refresh');
+                        // createTable(reslt); //函数调用
+                        // if (reslt == -1) {
+                        //     alert("电表不存在!!!");
+                        // } else {
+                        //     QueryAll();
+                        // }
+                        // alert(reslt);
+
+                    }
+                })
+            }
+
+            $("#btnOver").click(function () {
+                $("#myModal3").modal();
+            });
+            $("#insertButtonExcel").click(function () {
+                var path = $("#hidden5").val();
+                if (path == "") {
+                    alert("请先上传文件!");
+                    return;
+                }
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "text",//数据类型
+                    data: {
+                        "path": path
+                    },
+                    url: "http://localhost:8080/webProject_war_exploded/Import",  //数据访问路径
+                    success: function (reslt) {//返回成功后所调用得函数
+                        if (reslt==1){
+                            alert("导入成功!!")
+                        }
+                        // creteTable(reslt);//函数调用
+                        $("#hidden5").val("");
+                        QueryAll();
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        // alert(date);
+                    }
+                });
+            });
+            $("#submit").click(function () {
+                var formData = new FormData($('#formGrade')[0]);
+                alert(formData);
+                $.ajax({
+                    type: 'post',
+                    url: 'http://localhost:8080/webProject_war_exploded/UpLoader',
+                    data: formData,
+                    dataTyp: 'text',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        alert('上传成功文件名为:' + data);
+                        $("#hidden5").val(data);
+                    },
+                    error: function () {
+                        alert('上传失败');
+                    }
+                });
+            });
+
+            $("#selectpicker1").bind('change', function () {
+                var sltCity = document.getElementById("selectpicker2");
+                var options = $("#selectpicker1 option:selected").val();
+                // alert(options);
+                var year = $("#hidden2").val();
+                var month = $("#hidden3").val();
+                var arr = [];
+                if (parseInt(year) == parseInt(options)) {
+                    for (var j = 0; j <= month; j++) {
+                        if (j > 8) {
+                            arr[j] = j + 1;
+                        } else {
+                            var k = j + 1;
+                            arr[j] = "0" + k;
+                        }
+                    }
+                } else {
+                    for (var j = 0; j < 12; j++) {
+                        if (j > 8) {
+                            arr[j] = j + 1;
+                        } else {
+                            var k = j + 1;
+                            arr[j] = "0" + k;
+                        }
+                    }
+                }
+
+                // alert(arr);
+                sltCity.length = 1;
+                for (var i = 0; i < arr.length; i++) {
+                    //alert(arr[i]);
+                    $("#selectpicker2").append("<option>" + arr[i] + "</option>");
+                }
+                $("#selectpicker2").selectpicker('refresh');
+            });
+            /*新增点击按钮事件*/
+            $("#btnNew").click(function () {
+                $("#Divdata").modal();
+            });
+            /*修改点击按钮事件*/
+            $("#btnUpdate").click(function () {
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "json",//数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/QueryLast",  //数据访问路径
+                    success: function (result) {//返回成功后所调用得函数
+                        $("#hidden").val(result.meterreadingid);
+                        $("#Divdata2").modal();
+                        $("#meternumber2").val(result.meternumber);
+                        $("#electricmeternumber2").val(result.electricmeternumber);
+                        $("#meterreadingstarttime2").val(result.meterreadingstarttime);
+                        $("#meterreadingendtime2").val(result.meterreadingendtime);
+                        $("#nowmeternumber2").val(result.nowmeternumber);
+                        $("#lastmeternumber2").val(result.lastmeternumber);
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            });
+            /*删除点击按钮事件*/
+            $("#btnDelete").click(function () {
+                // var row = $("#tblUser").bootstrapTable('getSelections');
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "json",//数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/QueryLast",  //数据访问路径
+                    success: function (result) {//返回成功后所调用得函数
+                        $("#hidden").val(result.meterreadingid);
+                        $("#Divdata3").modal();
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            });
+
+            /*将数据绑定在表格上*/
+            function creteTable(userData) {
+                // var userdata = JSON.parse(userData);
+                $("#tblUser").bootstrapTable("destroy");//清空表格
+                $("#tblUser").bootstrapTable({
+                    data: userData,
+                    sidePagination: "client",
+                    loadMsg: "正在加载数据",
+                    pageSize: "10", //分页
+                    pagination: true,
+                    singleSelect: true,
+                    columns: [
+                        // {
+                        //     field: "meterreadingid",
+                        //     title: "主键",
+                        //     align: "center"
+                        // },
+                        {
+                            field: "state",
+                            checkbox: true,
+                            align: "center"
+                        },
+                        {
+                            field: "meternumber",
+                            title: "抄表编号",
+                            align: "center"
+                        },
+                        {
+                            field: "electricmeternumber",
+                            title: "电表编号",
+                            align: "center"
+                        },
+                        {
+                            field: "meterreadingstarttime",
+                            title: "抄表开始时间",
+                            align: "center"
+                        },
+                        {
+                            field: "meterreadingendtime",
+                            title: "抄表结束时间",
+                            align: "center"
+                        },
+                        {
+                            field: "nowmeternumber",
+                            title: "当前表数",
+                            align: "center"
+                        },
+                        {
+                            field: "lastmeternumber",
+                            title: "上一次表数",
+                            align: "center"
+                        },
+                        {
+                            field: "createtime",
+                            title: "创建时间",
+                            align: "center"
+                        },
+                        {
+                            field: "creater",
+                            title: "创建人",
+                            align: "center"
+                        },
+                        {
+                            field: "createway",
+                            title: "创建源",
+                            align: "center"
+                        },
+                        {
+                            field: "updater",
+                            title: "更新人",
+                            align: "center"
+                        },
+                        {
+                            field: "updatetime",
+                            title: "更新时间",
+                            align: "center"
+                        },
+                        {
+                            field: "meterreadingway",
+                            title: "抄表方式",
+                            align: "center"
+                        }
+                        // {
+                        //     field: "nowmeternumber",
+                        //     title: "当前电表数",
+                        //     align: "center",
+                        //     formatter: function (value, row, index) {
+                        //         return row["lightning_use"] * row["price_lightning"];
+                        //     }
+                        // }
+                    ]
+                });
+                $("#tblUser").bootstrapTable('hideLoading');
+            };
+            /*查询按钮点击事件*/
+            $("#btnSelect1").click(function () {
+                var option1 = $("#selectpicker1 option:selected").val();
+                var option2 = $("#selectpicker2 option:selected").val();
+                var option3 = $("#selectpicker3 option:selected").val();
+                var option4 = $("#selectpicker4 option:selected").val();
+                var option = option1 + "-" + option2;
+                if (option1 == "---请选择---") {
+                    option = null;
+                } else if (option1 != "---请选择---") {
+                    if (option2 == "---请选择---") {
+                        option = option1
+                    }
+                }
+                if (option3 == "---请选择---") {
+                    option3 = -1;
+                }
+                if (option4 == "---请选择---") {
+                    option4 = null;
+                }
+
+                // alert(option1);
+                // alert(option2);
+                // alert(option3);
+                // alert(option4);
+                // alert(option);
+
+                // var clocknum = $("#clocknum").val();
+                // var way = $("#way").val();
+                // var month = $("#month").val();
+                $.ajax({
+                    type: "post", //提交类型
+                    dataTyp: "json", //数据类型
+                    data: {
+                        "createtime": option,
+                        "meterreadingway": option4,
+                        "electricmeternumber": option3
+                    },
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/QueryByMore", //数据访问路径
+                    success: function (reslt) { //返回成功后所调用得函数
+                        creteTable(reslt);
+                    },
+                    error: function (date) { //返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            });
+            /*新增模态框确定事件*/
+            $("#btnSave").click(function () {
+                var meternumber = $("#meternumber").val();
+                var electricmeternumber = $("#electricmeternumber").val();
+                var meterreadingstarttime = $("#meterreadingstarttime").val();
+                var meterreadingendtime = $("#meterreadingendtime").val();
+                var nowmeternumber = $("#nowmeternumber").val();
+                var lastmeternumber = $("#lastmeternumber").val();
+                if (meternumber == null || electricmeternumber == null ||
+                    meterreadingstarttime == null || meterreadingendtime == null ||
+                    nowmeternumber == null || lastmeternumber == null) {
+                    alert("不能存在空值");
+                    return;
+                }
+                if (parseInt(nowmeternumber) < parseInt(lastmeternumber)) {
+                    alert("当前电表字数小于上次电表字数");
+                    return;
+                }
+                $.ajax({
+                    type: "post", //提交类型
+                    dataType: "text", //数据类型
+                    //contentType:'application/json;charset=UTF-8',
+                    // headers:{
+                    //     speciLan:"ch",
+                    //     devicetype:"web",
+                    //     userKey:12345
+                    // },
+                    data: {
+                        "meternumber": meternumber,
+                        "electricmeternumber": electricmeternumber,
+                        "meterreadingstarttime": meterreadingstarttime,
+                        "meterreadingendtime": meterreadingendtime,
+                        "nowmeternumber": nowmeternumber,
+                        "lastmeternumber": lastmeternumber
+                    },
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/Add", //数据访问路径
+                    success: function (reslt) { //返回成功后所调用得函数
+                        // createTable(reslt); //函数调用
+                        if (reslt == -1) {
+                            alert("电表不存在!!!");
+                        } else if (reslt == -2) {
+                            alert("与上次电表值不匹配")
+                        } else {
+                            QueryAll();
+                        }
+                    }
+                    // error: function (reslt) { //返回失败所调用得函数
+                    //     // alert(date);
+                    //     alert("插入失败");
+                    //
+                    // }
+                });
+            });
+            /*新增模态框取消事件*/
+            $("#btnoff").click(function () {
+                $("#meternumber").val("");
+                $("#electricmeternumber").val("");
+                $("#meterreadingstarttime").val("");
+                $("#meterreadingendtime").val("");
+                $("#nowmeternumber").val("");
+                $("#lastmeternumber").val("");
+            });
+            /*修改模态框确定事件*/
+            $("#btnSave2").click(function () {
+                var meterreadingid = $("#hidden").val();
+                var meternumber2 = $("#meternumber2").val();
+                var electricmeternumber2 = $("#electricmeternumber2").val();
+                var meterreadingstarttime2 = $("#meterreadingstarttime2").val();
+                var meterreadingendtime2 = $("#meterreadingendtime2").val();
+                var nowmeternumber2 = $("#nowmeternumber2").val();
+                var lastmeternumber2 = $("#lastmeternumber2").val();
+                if (meternumber2 == null || electricmeternumber2 == null ||
+                    meterreadingstarttime2 == null || meterreadingendtime2 == null ||
+                    nowmeternumber2 == null || lastmeternumber2 == null) {
+                    alert("不能存在空值");
+                    return;
+                }
+                // if (parseInt(nowmeternumber2) < parseInt(lastmeternumber2)) {
+                //     alert("当前电表字数小于上次电表字数");
+                //     return;
+                // }
+                $.ajax({
+                    type: "post", //提交类型
+                    dataTyp: "text", //数据类型
+                    data: {
+                        "meterreadingid": meterreadingid,
+                        "meternumber": meternumber2,
+                        "electricmeternumber": electricmeternumber2,
+                        "meterreadingstarttime": meterreadingstarttime2,
+                        "meterreadingendtime": meterreadingendtime2,
+                        "nowmeternumber": nowmeternumber2,
+                        "lastmeternumber": lastmeternumber2
+                    },
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/Update", //数据访问路径
+                    success: function (reslt) { //返回成功后所调用得函数
+                        // createTable(reslt); //函数调用
+                        if (reslt == -1) {
+                            alert("电表不存在!!!");
+                        } else {
+                            QueryAll();
+                        }
+                    }
+                    // error: function (reslt) { //返回失败所调用得函数
+                    //     // alert(date);
+                    //     alert("插入失败");
+                    //
+                    // }
+                });
+            });
+            /*修改模态框取消事件*/
+            $("#btnoff2").click(function () {
+                // var row = $("#tblUser").bootstrapTable('getSelections');
+                // $("#meternumber2").val(row[0].meternumber);
+                // $("#electricmeternumber2").val(row[0].electricmeternumber);
+                // $("#meterreadingstarttime2").val(row[0].meterreadingstarttime);
+                // $("#meterreadingendtime2").val(row[0].meterreadingendtime);
+                // $("#nowmeternumber2").val(row[0].nowmeternumber);
+                // $("#lastmeternumber2").val(row[0].lastmeternumber);
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "json",//数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/QueryLast",  //数据访问路径
+                    success: function (result) {//返回成功后所调用得函数
+                        // alert(result);
+                        $("#Divdata2").modal();
+                        $("#meternumber2").val(result.meternumber);
+                        $("#electricmeternumber2").val(result.electricmeternumber);
+                        $("#meterreadingstarttime2").val(result.meterreadingstarttime);
+                        $("#meterreadingendtime2").val(result.meterreadingendtime);
+                        $("#nowmeternumber2").val(result.nowmeternumber);
+                        $("#lastmeternumber2").val(result.lastmeternumber);
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            });
+            /*删除模态框确定事件*/
+            $("#btnSave3").click(function () {
+                var meterreadingid = $("#hidden").val();
+                $.ajax({
+                    type: "post",	//提交类型
+                    dataTyp: "text",//数据类型
+                    url: "http://localhost:8080/webProject_war_exploded/MeterReading/Delete",  //数据访问路径
+                    data: {
+                        "meterreadingid": meterreadingid
+                    },
+                    success: function (reslt) {//返回成功后所调用得函数
+                        QueryAll();
+                    },
+                    error: function (date) {//返回失败所调用得函数
+                        alert(date);
+                    }
+                });
+            });
+            /*删除模态框取消事件*/
+            $("#btnoff3").click(function () {
+                return;
+            });
+
+            // $("#myframe").load(function () {
+            //    var info=$(this);
+            //    alert(info);
+            //    alert(info[0].contentDocument.body.textContent)
+            // });
+            $("#formGrade").ajaxForm(function (data) {
+                alert(date);
+            });
+
+
+            //获取导入返回值
+            // document.getElementById("myframe").addEventListener("load", function (e) {
+            //     var pre = e.target.contentWindow.document.getElementsByTagName("pre")[0];
+            //     alert(this.textContent);
+            //     alert(pre);
+            //     if (pre) {
+            //         var res = JSON.parse(pre.innerText);
+            //         // 执行处理
+            //         alert(res);
+            //     }
+            // });
+        });
+    </script>
+</head>
+
+<body>
+<input type="hidden" id="hidden" value=""/>
+<input type="hidden" id="hidden2" value=""/>
+<input type="hidden" id="hidden3" value=""/>
+<input type="hidden" id="hidden4" value=""/>
+<input type="hidden" id="hidden5" value="">
+<div class="container-fluid">
+    <!--查询区域开始-->
+    <!--列表开始-->
+    <div class="row col-md-10">
+        <table id="tblUser"></table>
+    </div>
+    <!--列表结束-->
+    <!--功能栏开始-->
+    <center>
+        <div class="row col-md-10">
+            <div id="Select" class="form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>电表编号</label>
+                    <select class="selectpicker show-tick" id="selectpicker3">
+                        <option>---请选择---</option>
+                    </select>
+                    <label class="control-label" for>抄表方式</label>
+                    <select class="selectpicker show-tick" id="selectpicker4">
+                        <option>---请选择---</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>年份</label>
+                    <select class="selectpicker show-tick" id="selectpicker1">
+                        <option>---请选择---</option>
+                    </select>
+                    <label class="control-label" for>月份</label>
+                    <select class="selectpicker show-tick" id="selectpicker2">
+                        <option>---请选择---</option>
+                    </select>
+
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" id="btnSelect1">查询</button>
+                </div>
+            </div>
+            <!-- bootstrap -->
+        </div>
+        <div class="row col-md-10" style="margin-top: 20px;">
+            <button class="btn btn-success" id="btnNew">新增</button>
+            <button class="btn btn-success" id="btnUpdate">修改</button>
+            <button class="btn btn-success" id="btnDelete">删除</button>
+
+            <div class="modal fade" id="myModal3" tabindex="-1" role="dialog"
+                 aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                            <h4 class="modal-title">Excel Upload </h4>
+                        </div>
+                        <div class="modal-body">
+                            <form action="http://localhost:8080/webProject_war_exploded/UpLoad"
+                                  class="form-horizontal " method="post" target="myframe"
+                                  enctype="multipart/form-data" id="formGrade">
+                                <div class="form-group">
+                                    <label class="control-label col-md-4">Excel:</label>
+                                    <div class="col-md-6">
+                                        <div class="input-group input-large custom-date-range" data-date="13/07/2013"
+                                             data-date-format="mm/dd/yyyy">
+                                            <input type="file" value="inputExcel"
+                                                   class="btn btn-primary" name="upload" id="xlf"/>
+                                        </div>
+                                        <input type="button" id="submit" value="上传"/>
+                                        <!--<input id="uploadexc" type="button" value="上传"/>-->
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+
+                            <button data-dismiss="modal" class="btn btn-primary" id="insertButtonExcel"
+                                    type="button">导入
+                            </button>
+                            <button data-dismiss="modal" class="btn btn-primary" type="button">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <iframe id="myframe" name="myframe" hidden></iframe>
+
+
+            <button class="btn btn-success" id="btnOver">远程抄表</button>
+            <!--<button class="btn btn-warning" id="btnUpdate">修改</button>-->
+            <!--<button class="btn btn-danger" id="btnDel">删除</button>-->
+        </div>
+    </center>
+    <!--功能栏结束-->
+</div>
+<!--新增模态框-->
+<div class="modal fade" id="Divdata" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">信息</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>抄表编号</label>
+                    <input type="text" class="form-control" id="meternumber" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表编号</label>
+                    <input type="text" class="form-control" id="electricmeternumber" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <br/><br/>
+
+
+                <div class="form-group">
+                    <label class="control-label" for>当前表数</label>
+                    <input type="text" class="form-control" id="nowmeternumber" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>上一次表数</label>
+                    <input type="text" class="form-control" id="lastmeternumber" name="Datausername" maxlength="20"/>
+                </div>
+                <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3"/>
+                <div class="form-group">
+                    <label class="control-label" for>抄表开始时间</label>
+                    <!--<input type="date" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                    <!-- 时间开始 -->
+                    <div class="form-group">
+                        <div id="date1" class="input-group date form_date ">
+                            <input id="meterreadingstarttime" style="width: 125px" class="form-control" type="text"
+                                   value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date1").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                    <!-- 时间结束 -->
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>抄表结束时间</label>
+                    <!--<input type="date" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                    <!-- 时间开始 -->
+                    <div class="form-group">
+                        <div id="date2" class="input-group date form_date ">
+                            <input id="meterreadingendtime" style="width: 135px" class="form-control" type="text"
+                                   value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date2").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-right" //选择框位置
+                        });
+                    </script>
+                    <!-- 时间结束 -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnSave" class="btn btn-info" data-dismiss="modal" aria-hidden="true">保存
+                </button>
+
+                <button type="button" id="btnoff" class="btn btn-default" aria-hidden="true">重置
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--新增模态框-->
+<!--修改模态框-->
+<div class="modal fade" id="Divdata2" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">修改最后一条记录</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>抄表编号</label>
+                    <input type="text" class="form-control" id="meternumber2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>电表编号</label>
+                    <input type="text" class="form-control" id="electricmeternumber2" name="Datausername"
+                           maxlength="20"/>
+                </div>
+                <br/><br/>
+
+
+                <div class="form-group">
+                    <label class="control-label" for>当前表数</label>
+                    <input type="text" class="form-control" id="nowmeternumber2" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>上一次表数</label>
+                    <input type="text" class="form-control" id="lastmeternumber2" name="Datausername" maxlength="20"/>
+                </div>
+                <hr style="filter: alpha(opacity=100,finishopacity=0,style=3)" width="80%" color="#6f5499" size="3"/>
+                <div class="form-group">
+                    <label class="control-label" for>抄表开始时间</label>
+                    <!--<input type="date" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                    <!-- 时间开始 -->
+                    <div class="form-group">
+                        <div id="date3" class="input-group date form_date ">
+                            <input id="meterreadingstarttime2" style="width: 125px" class="form-control" type="text"
+                                   value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date3").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-left" //选择框位置
+                        });
+                    </script>
+                    <!-- 时间结束 -->
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>抄表结束时间</label>
+                    <!--<input type="date" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                    <!-- 时间开始 -->
+                    <div class="form-group">
+                        <div id="date4" class="input-group date form_date ">
+                            <input id="meterreadingendtime2" style="width: 135px" class="form-control" type="text"
+                                   value="" readonly
+                                   placeholderl=""/>
+                            <span class="input-group-addon" style="width: 25%;"><span
+                                    class="glyphicon glyphicon-calendar"></span></span>
+                        </div>
+                    </div>
+                    <script type="application/javascript">
+                        //必须在初始化控件之前进行设置
+                        $("#date4").datetimepicker({
+                            language: 'zh-CN', //中英文
+                            weekStart: 1, //一周从哪天开始
+                            todayBtn: 1, //当天日期按钮
+                            autoclose: 1, //选定时间后是否自动关闭
+                            todayHighlight: 1, //当天日期高亮
+                            startView: 2, //选完时间首先显示的视图
+                            minView: 2, //最精确的时间
+                            forceParse: 0,//制解析
+                            format: "yyyy-mm-dd", //显示格式
+                            pickerPosition: "bottom-right" //选择框位置
+                        });
+                    </script>
+                    <!-- 时间结束 -->
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnSave2" class="btn btn-info" data-dismiss="modal" aria-hidden="true">保存
+                </button>
+                <button type="button" id="btnoff2" class="btn btn-default" aria-hidden="true">还原
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--修改模态框-->
+<!--删除模态框-->
+<div class="modal fade" id="Divdata3" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">删除最后一条记录</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                确定删除最后一条记录????
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btnSave3" class="btn btn-info" data-dismiss="modal" aria-hidden="true">删除
+                </button>
+                <button type="button" id="btnoff3" class="btn btn-default" data-dismiss="modal" aria-hidden="true">取消
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<!--删除模态框-->
+</body>
+
+</html>

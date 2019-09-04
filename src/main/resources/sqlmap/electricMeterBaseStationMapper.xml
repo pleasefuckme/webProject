@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.baidu.dao.electricMeterBaseStationMapper">
+    <!--<resultMap id="electricmeternumbers" type="QueryVo">-->
+    <!--<result property="electricmeternumber" column="electricmeternumber"></result>-->
+    <!--</resultMap>-->
+    <!--<resultMap id="meterreadingways" type="QueryVo">-->
+    <!--<result property="meterreadingway" column="meterreadingway"></result>-->
+    <!--</resultMap>-->
+    <select id="QueryAll" resultType="electricmeterbasestation">
+        select *
+        from electricmeterbasestation
+    </select>
+    <!--<select id="QueryLastByElectricMeterNumber" resultType="meterreading" parameterType="int">-->
+    <!--select *-->
+    <!--from meterreading-->
+    <!--where electricmeternumber = #{electricmeternumber}-->
+    <!--order by meterreadingid desc-->
+    <!--limit 1-->
+    <!--</select>-->
+    <!--<select id="QueryLast" resultType="meterreading">-->
+    <!--select *-->
+    <!--from meterreading-->
+    <!--order by meterreadingid desc-->
+    <!--limit 1-->
+    <!--</select>-->
+    <insert id="Add" parameterType="electricmeterbasestation" useGeneratedKeys="true"
+            keyProperty="electricmeterbasestationid">
+        insert into electricmeterbasestation
+          (basestationnumber, placethebasestation,
+          meterinstallationtime, electricmeternumber,
+           contacts,electricitymeterinit,isservice,
+           note,mainlyprovidedlinenumber,validity,expirationdate)
+        values (#{basestationnumber},#{placethebasestation},#{meterinstallationtime},
+                #{electricmeternumber},#{contacts},#{electricitymeterinit},
+                #{isservice},#{note},#{mainlyprovidedlinenumber},#{validity},#{expirationdate})
+    </insert>
+    <update id="Update" parameterType="electricmeterbasestation" >
+    update electricmeterbasestation
+    set basestationnumber=#{basestationnumber},placethebasestation=#{placethebasestation},
+        meterinstallationtime=#{meterinstallationtime},electricmeternumber=#{electricmeternumber},
+        contacts=#{contacts},electricitymeterinit=#{electricitymeterinit},
+        note=#{note},mainlyprovidedlinenumber=#{mainlyprovidedlinenumber},
+        isservice=#{isservice},validity=#{validity},
+        expirationdate=#{expirationdate}
+    where electricmeterbasestationid = #{electricmeterbasestationid}
+    </update>
+
+
+    <delete id="Delete" parameterType="int" >
+    delete from electricmeterbasestation where electricmeterbasestationid=#{electricmeterbasestationid}
+    </delete>
+    <select id="QueryById" parameterType="int" resultType="electricmeterbasestation" >
+        select *
+        from electricmeterbasestation where basestationnumber=#{basestationnumber}
+    </select>
+    <!--<select id="getelectricmeternumbers" resultMap="electricmeternumbers">-->
+    <!--select distinct electricmeternumber-->
+    <!--from meterreading-->
+    <!--</select>-->
+    <!--<select id="getmeterreadingways" resultMap="meterreadingways">-->
+    <!--select distinct meterreadingway-->
+    <!--from meterreading-->
+    <!--</select>-->
+    <!--&lt;!&ndash;多条件查询&ndash;&gt;-->
+    <!--<select id="QueryByMore" resultType="meterreading" parameterType="QueryVo" >-->
+    <!--select * from meterreading-->
+    <!--<where>-->
+    <!--<if test="electricmeternumber!=-1">-->
+    <!--and electricmeternumber=#{electricmeternumber}-->
+    <!--</if>-->
+    <!--<if test="meterreadingway!=null">-->
+    <!--and meterreadingway=#{meterreadingway}-->
+    <!--</if>-->
+    <!--<if test="createtime!=null">-->
+    <!--and createtime like #{createtime}-->
+    <!--</if>-->
+    <!--</where>-->
+    <!--</select>-->
+</mapper>

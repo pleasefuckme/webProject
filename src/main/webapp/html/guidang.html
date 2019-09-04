@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="command/Bootstrap/bootstrap-3.3.0/css/bootstrap.min.css"/>
+		<link rel="stylesheet" href="command/bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.css"/>
+		<link rel="stylesheet" href="command/bower_components/bootstrap-table/dist/bootstrap-table.min.css"/>
+		<script src="command/jquery-3.4.0.min.js"></script>
+		<script src="command/Bootstrap/bootstrap-3.3.0/js/bootstrap.min.js"></script>
+		<script src="command/bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+		<script src="command/bower_components/moment/min/moment.min.js"></script>
+		<script src="command/bower_components/moment/min/locales.min.js"></script>
+		<script src="command/bower_components/bootbox/bootbox.min.js"></script>
+		<script src="command/bower_components/bootstrap-select/js/bootstrap-select.js"></script>
+		<script src="command/bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+		<script src="command/bower_components/bootstrap-table/dist/bootstrap-table.min.js"></script>
+		<script sre="command/bower_components/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+		<script src="command/bower_components/moment/min/moment-with-locales.min.js"></script>
+		<script type="application/javascript">
+			$(function(){
+				/*
+        	   * 方法说明:解析json数据
+       	       * 参数:无参
+       		   * 创建人:张俞鑫
+       		   * 创建时间:2019.8.4
+       		   */
+				$.ajax({
+					type:"get",
+					dataType:"json",
+					url:"json/guidang.json",
+					success:function(reslt){
+						creteTable(reslt);
+					},
+					error:function(data){
+						alert(data);
+					}
+				});				
+			});
+			function creteTable(userData){
+					$("#tbguidang").bootstrapTable("destroy");
+					$("#tbguidang").bootstrapTable({
+						data:userData,
+						loadMsg:"正在加载数据",
+						sidePagination:"client",
+						pageSize:"5",
+						pagination:true,
+						singleSelect:true,
+						columns:[
+							{
+								field:"state",
+								checkbox:true,
+								align:"center"
+							},
+							{
+								field:"xmname",
+								title:"项目名称",
+								align:"center"
+							},
+							{
+								field:"xmmoney",
+								title:"项目总金额",
+								align:"center"
+							},
+							{
+								field:"xmfuzeren",
+								title:"项目负责人",
+								align:"center"
+							},
+							{
+								field:"xmstart",
+								title:"项目开始时间",
+								align:"center"
+							},
+							{
+								field:"xminspect",
+								title:"项目验收时间",
+								align:"center"
+							},
+							{
+								field:"xmend",
+								title:"项目结束时间",
+								align:"center"
+							}
+						]
+					});
+				}
+		</script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<!--顶部查询区域-->
+			<div class="row col-md-10">
+				<div id="divSelect" class="form-inline">
+					<div class="form-group">
+						<label class="control-label" for>项目名称</label>
+						<input type="text" id="txtItemname" name="itemname" maxlength="20" class="form-control" />
+						<label class="control-label" for>项目负责人</label>
+						<input type="text" id="txtManager" name="itemmanager" maxlength="8" class="form-control" />
+					</div>
+					<div class="form-group">
+						<button type="button" id="btnchaxun" class="btn btn-success active">查询</button>
+					</div>
+				</div>
+			</div>
+			<!--导出和下载按钮-->
+			<div class="row col-md-10" style="margin-top: 20px;">
+				<button type="button" id="btnDaochu" class="btn">导出</button>
+				<button type="button" id="btnDownload" class="btn btn-info">下载</button>
+			</div>
+			<!--表格区域-->
+			<div class="row col-md-10">
+				<table id="tbguidang"></table>
+			</div>
+		</div>
+	</body>
+</html>

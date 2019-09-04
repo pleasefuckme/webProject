@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+    <meta charset="utf-8"/>
+
+
+    <link href="../css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link href="../css/Clock_jiesuan.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="../js/jquery-3.1.1.js"></script>
+    <script src="../js/bootstrap.js"></script>
+
+    <script src="../bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="../bower_components/moment/min/moment.min.js"></script>
+    <script src="../bower_components/moment/min/locales.min.js"></script>
+    <script src="../bower_components/bootbox/bootbox.min.js"></script>
+    <script src="../bower_components/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="../bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script src="../bower_components/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="../bower_components/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+    <script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
+
+
+    <script src="../js/echarts.min.js" type="text/javascript"></script>
+    <!--图表内容-->
+    <script type="text/javascript">
+       window.onload=function () {
+           // 基于准备好的dom，初始化echarts实例
+           var myChart3 = echarts.init(document.getElementById('showGraphic2'));
+           var option3 = {
+               title : {
+                   text: '电表用量饼状图',
+                   subtext: '纯属虚构(测试)',
+                   textStyle: {
+                       color: '#CD0000'
+                   },
+                   subtextStyle: 'myTextStyle', //小标题样式
+                   x:'center'
+               },
+               tooltip : {
+                   trigger: 'item',
+                   formatter: "{a} <br/>{b} : {c} ({d}%)"
+               },
+               legend: {
+                   orient: 'vertical',
+                   left: 'left',
+                   data: ['A电表','B电表','C电表','D电表','E电表']
+               },
+               toolbox: {
+                   show : true,
+                   feature : {
+                       dataView : {show: true, readOnly: false}
+                   }
+               },
+               series : [
+                   {
+                       name: '使用电量/',
+                       type: 'pie',
+                       radius : '55%',
+                       center: ['50%', '60%'],
+                       data:[
+                           {value:213, name:'A电表'},
+                           {value:310, name:'B电表'},
+                           {value:234, name:'C电表'},
+                           {value:135, name:'D电表'},
+                           {value:1548, name:'E电表'}
+                       ],
+                       itemStyle: {
+                           emphasis: {
+                               shadowBlur: 10,
+                               shadowOffsetX: 0,
+                               shadowColor: 'rgba(0, 0, 0, 0.5)'
+                           }
+                       }
+                   }
+               ]
+           };
+           // 使用刚指定的配置项和数据显示图表。
+           myChart3.setOption(option3);
+
+           // 基于准备好的dom，初始化echarts实例
+           var myChart2 = echarts.init(document.getElementById('showGraphic'));
+           // 指定图表的配置项和数据
+           var option2 = {
+               title: {
+                   text: '电表使用电量图'
+               },
+               tooltip: {},
+               legend: {
+                   data:['电量']
+               },
+               toolbox: {
+                   show : true,
+                   feature : {
+                       dataView : {show: true, readOnly: false},
+                       magicType : {show: true, type: ['line', 'bar']},
+                       restore : {show: true},
+                       saveAsImage : {show: true}
+                   }
+               },
+               xAxis: {
+                   data: ["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"]
+               },
+               yAxis: {},
+               series: [{
+                   name: '电量',
+                   type: 'bar',
+                   data: [1000, 1500, 1289, 1780, 1550, 1230,1987,1765,2056,2980,1087.2000,1267]
+               }]
+           };
+
+           // 使用刚指定的配置项和数据显示图表。
+           myChart2.setOption(option2);
+
+       }
+    </script>
+    <!--图表样式结束-->
+    <!--表格样式-->
+    <script type="application/javascript">
+        $(function(){
+            //读取数据类型
+            $.ajax({
+                type:"get",	//提交类型
+                dataTyp:"json",//数据类型
+                url:"../json/dianbiao.json",//数据访问路径
+                success:function(reslt){//返回成功后所调用得函数
+                    creteTable(reslt);//函数调用
+                },
+                error:function(date){//返回失败所调用得函数
+                    alert(date);
+                }
+            });
+
+            /*新增点击按钮事件*/
+            // $("#btnNew").click(function(){
+            //     $("#Divdata").modal();
+            // });
+            // /*修改点击按钮事件*/
+            // $("#btnNew").click(function(){
+            //     $("#Divdata").modal();
+            // });
+            // /*删除点击按钮事件*/
+            // $("#btnNew").click(function(){
+            //     $("#Divdata").modal();
+            // });
+
+        });
+
+
+        /*将数据绑定在表格上*/
+        function creteTable(userData){
+            $("#tabl").bootstrapTable("destroy");//清空表格
+            $("#tabl").bootstrapTable({
+                data:userData,
+                sidePagination:"client",
+                pageSize:"8", //分页
+                pagination:true,
+                columns:[
+                    {
+                        field:"name_clock",
+                        title:"电表",
+                        align:"center"
+                    },
+                    {
+                        field:"lightning_use",
+                        title:"耗电/度",
+                        align:"center"
+                    },
+                    {
+                        field:"price_lightning",
+                        title:"电价 度/元",
+                        align:"center"
+                    },
+                    {
+                        field:"month",
+                        title:"月份",
+                        align:"center"
+                    },
+                    {
+                        field:"money",
+                        title:"总额",
+                        align:"center",
+                        formatter: function (value, row, index) {
+                            return row["lightning_use"]*row["price_lightning"];
+                        }
+                    }
+                ]
+            });
+        }
+        // $("#btnoff").click(function(){
+        //     $("").val("");
+        //     $("").val("");
+        // });
+    </script>
+    <!--表格样式结束-->
+    <!--简单样式-->
+    <style type="text/css">
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+    </style>
+    <!--简单样式结束-->
+</head>
+<body style="background: #0f0f0f">
+
+
+    <!--模态框处理-->
+    <!--图表开始-->
+    <div class="container">
+        <div class="row">
+        <div class="col-md-8" id="showGraphic" style="height:400px;border: solid 1px #008B45; margin: 2px; background-color: #0f0f0f;"></div>
+        <div class="col-md-2" style="height:400px; margin: 2px; background-color: #0f0f0f;">
+            <div>
+                <font size="5" color="#008B45">选择电表:</font>
+            </div>
+            <select class="form-control">
+                <option>A电表</option>
+                <option>B电表</option>
+                <option>C电表</option>
+                <option>D电表</option>
+                <option>E电表</option>
+            </select>
+            </div>
+        <div class="col-md-8" id="showGraphic2" style=" height:400px;border: solid 1px #008B45; margin: 2px; background-color: #0f0f0f;"></div>
+        <div class="col-md-2" style="height:400px; margin: 2px; background-color: #0f0f0f;">
+            <div>
+                <font size="5" color="#008B45">选择月份:</font>
+            </div>
+                <select class="form-control">
+                <option>一月</option>
+                <option>二月</option>
+                <option>三月</option>
+                <option>四月</option>
+                <option>五月</option>
+                <option>六月</option>
+                <option>七月</option>
+                <option>八月</option>
+                <option>九月</option>
+                <option>十月</option>
+                <option>十一月</option>
+                <option>十二月</option>
+            </select>
+
+        </div>
+    </div>
+    </div>
+    <!--图表结束-->
+    <div class="container-fluid">
+        <!--列表开始-->
+        <div class="row col-md-10">
+            <table id="tabl"></table>
+        </div>
+        <!--列表结束-->
+        <!--查询区域开始-->
+        <center>
+        <div class="row col-md-10">
+            <div id="Select" class="form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>电表名称</label>
+                    <input type="text" class="form-control" id="txtUsername1" name="username" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" id="btnSelect1">查询</button>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>月份</label>
+                    <input type="text" class="form-control" id="txtUsername2" name="username" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-danger" id="btnSelect2">查询</button>
+                </div>
+            </div>
+        </div>
+
+        <!--查询结束-->
+
+        <!--功能区域开始-->
+        <!--<div class="row col-md-10" style="margin-top: 20px;">-->
+            <!--<button class="btn btn-success" id="btnNew">新增</button>-->
+            <!--<button class="btn btn-warning" id="btnUpdate">修改</button>-->
+            <!--<button class="btn btn-danger" id="btnDel">删除</button>-->
+        <!--</div>-->
+        </center>
+        <!--功能区域结束-->
+    </div>
+    <div style="height: 100px;width: 200px"></div>
+
+
+
+    <!--<div class="modal fade" id="Divdata" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">-->
+            <!--<div class="modal-dialog">-->
+                <!--<div class="modal-content">-->
+                    <!--&lt;!&ndash;模态标题&ndash;&gt;-->
+                    <!--<div class="modal-header">-->
+                        <!--<button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>-->
+                        <!--<h4 class="modal-title">信息</h4>-->
+                    <!--</div>-->
+                    <!--&lt;!&ndash;主体表单&ndash;&gt;-->
+                    <!--<div class="modal-body form-inline">-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>设备类型</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>服务器牌</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                        <!--<br /><br />-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>购&nbsp;买&nbsp;人&nbsp;</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>联系方式</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                        <!--<br /><br />-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>供&nbsp;应&nbsp;商&nbsp;</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                        <!--<div class="form-group">-->
+                            <!--<label class="control-label" for>联系方式</label>-->
+                            <!--<input type="text" class="form-control" id="txtDatausername" name="Datausername" maxlength="20"/>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="modal-footer">-->
+                        <!--<button type="button" id="btnSave" class="btn btn-info" data-dismiss="modal" aria-hidden="true" onclick="msave()">保存</button>-->
+                        <!--<button type="button" id="btnoff" class="btn btn-default" data-dismiss="modal" aria-hidden="true">重置</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+
+</body>
+</html>

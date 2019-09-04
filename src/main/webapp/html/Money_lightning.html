@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <!--引入所需要的文件-->
+
+    <link href="../css/bootstrap.css" rel="stylesheet" type="text/css"/>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="../js/jquery-3.1.1.js"></script>
+    <script src="../js/bootstrap.js"></script>
+
+
+    <script src="../bower_components/bootstrap-treeview/dist/bootstrap-treeview.min.js"></script>
+    <script src="../bower_components/moment/min/moment.min.js"></script>
+    <script src="../bower_components/moment/min/locales.min.js"></script>
+    <script src="../bower_components/bootbox/bootbox.min.js"></script>
+    <script src="../bower_components/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="../bower_components/bootstrap-switch/dist/js/bootstrap-switch.min.js"></script>
+    <script src="../bower_components/bootstrap-table/dist/bootstrap-table.min.js"></script>
+    <script src="../bower_components/bootstrap-table/dist/locale/bootstrap-table-zh-CN.js"></script>
+    <script src="../bower_components/moment/min/moment-with-locales.min.js"></script>
+
+
+    <script type="application/javascript">
+        $(function () {
+            //读取数据类型
+            $.ajax({
+                type: "get",	//提交类型
+                dataTyp: "json",//数据类型
+                url: "../json/jiesuanLightning.json",//数据访问路径
+                success: function (reslt) {//返回成功后所调用得函数
+                    creteTable(reslt);//函数调用
+                },
+                error: function (date) {//返回失败所调用得函数
+                    alert(date);
+                }
+            });
+
+            /*新增点击按钮事件*/
+            $("#btnNew").click(function () {
+                $("#Divdata").modal();
+            });
+            /*修改点击按钮事件*/
+            $("#btnNew").click(function () {
+                $("#Divdata").modal();
+            });
+            /*删除点击按钮事件*/
+            $("#btnNew").click(function () {
+                $("#Divdata").modal();
+            });
+
+        });
+
+
+        /*将数据绑定在表格上*/
+        function creteTable(userData) {
+            $("#tblUser").bootstrapTable("destroy");//清空表格
+            $("#tblUser").bootstrapTable({
+                data: userData,
+                sidePagination: "client",
+                pageSize: "10", //分页
+                pagination: true,
+                singleSelect: true,
+                columns: [
+                    {
+                        field: "name_clock",
+                        title: "电表",
+                        align: "center"
+                    },
+                    {
+                        field: "money",
+                        title: "总额",
+                        align: "center",
+                    }
+                ]
+            });
+        }
+
+        $("#btnoff").click(function () {
+            $("").val("");
+            $("").val("");
+        });
+    </script>
+</head>
+
+<body style="background: #0f0f0f">
+
+<div class="container-fluid">
+    <!--查询区域开始-->
+    <!--列表开始-->
+    <div class="row col-md-10">
+        <table id="tblUser"></table>
+    </div>
+    <!--列表结束-->
+
+</div>
+<!--模态框处理-->
+<div class="modal fade" id="Divdata" tabindex="-1" aria-labellebdy="myModelLable" aria-hidden="hidden">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!--模态标题-->
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">关闭</button>
+                <h4 class="modal-title">信息</h4>
+            </div>
+            <!--主体表单-->
+            <div class="modal-body form-inline">
+                <div class="form-group">
+                    <label class="control-label" for>设备类型</label>
+                    <input type="text" class="form-control" id="txtDatausername1" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>服务器牌</label>
+                    <input type="text" class="form-control" id="txtDatausername2" name="Datausername" maxlength="20"/>
+                </div>
+                <br/><br/>
+                <div class="form-group">
+                    <label class="control-label" for>购&nbsp;买&nbsp;人&nbsp;</label>
+                    <input type="text" class="form-control" id="txtDatausername3" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>联系方式</label>
+                    <input type="text" class="form-control" id="txtDatausername4" name="Datausername" maxlength="20"/>
+                </div>
+                <br/><br/>
+                <div class="form-group">
+                    <label class="control-label" for>供&nbsp;应&nbsp;商&nbsp;</label>
+                    <input type="text" class="form-control" id="txtDatausername5" name="Datausername" maxlength="20"/>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for>联系方式</label>
+                    <input type="text" class="form-control" id="txtDatausername6" name="Datausername" maxlength="20"/>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="btnSave" class="btn btn-info" data-dismiss="modal" aria-hidden="true"
+                        onclick="msave()">保存
+                </button>
+                <button type="button" id="btnoff" class="btn btn-default" data-dismiss="modal" aria-hidden="true">重置
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>
